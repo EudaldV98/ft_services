@@ -74,5 +74,21 @@ spec:
         - name: ssh-host-keys
           mountPath: /etc/ssh/ssh_host_rsa_key
           subPath: ssh_host_rsa_key
-          readOnly: true
-				
+					readOnly: true
+      volumes:
+      - name: ssh-host-keys
+        secret:
+          secretName: ssh-host-keys
+          items:
+          - key: ssh_host_ed25519_key
+            path: ssh_host_ed25519_key
+            mode: 0600
+          - key: ssh_host_rsa_key
+            path: ssh_host_rsa_key
+            mode: 0600
+      - name: tls-key
+        secret:
+          secretName: tls-key
+      - name: nginx-config
+        configMap:
+					name: nginx-config
