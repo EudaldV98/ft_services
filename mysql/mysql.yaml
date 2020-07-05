@@ -4,14 +4,30 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql
+  labels:
+    app: ft_services
 spec:
   ports:
   - port: 3306
   selector:
-    app: mysql
+    app: ft_services
+    tier: mysql
   clusterIP: None
 
+---
 
+apiVersion: v1
+kind: persistentVolumeClaim
+metadata:
+    name: mysql-pv-claim
+    labels:
+        app: ft_services
+spec:
+    accessModels:
+    - ReadWriteOnce
+    resources:
+        requests:
+            storage: 5Gi
 ---
 
 # for versions before 1.9.0 use apps/v1beta2
@@ -19,24 +35,32 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
+  labels:
+    app: ft_services
 spec:
   selector:
     matchLabels:
-      app: mysql
+      app: ft_services
+      tier: mysql
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: mysql
+        app: ft_services
+        tier: mysql
     spec:
       containers:
-      - image: mysql:5.6
-        name: mysql
+      - name: mysql
+        image: custom-mysql:1.11
+        imagePullPolicy: Never
         env:
           # Use secret in real usage
         - name: MYSQL_ROOT_PASSWORD
-          value: password
+          valueForm:
+            secretKeyRef:
+               name: mysql-pass
+               key: password
         ports:
         - containerPort: 3306
           name: mysql
