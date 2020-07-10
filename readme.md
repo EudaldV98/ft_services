@@ -33,3 +33,6 @@ RESSOURCES:
 
 .--> [kubernetes - connecting services]
 - https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/
+
+.--> [wordpress.yaml]
+https://github.com/GoogleCloudPlatform/kubernetes-engine-samples/blob/master/wordpress-persistent-disks/wordpress.yaml
