@@ -1,9 +1,9 @@
-FROM alpine:3.11
+FROM	alpine:3.11
 
-RUN	apk add influxdb; \
-	apk add openrc; \
-	apk add ca-certificates
+RUN		apk add influxdb; \
+		apk add openrc; \
+		apk add ca-certificates
 
 EXPOSE	8086
 
-CMD influx run -config /etc/influxdb.conf
+CMD		influx run -config /etc/influxdb.conf
