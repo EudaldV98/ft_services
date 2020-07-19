@@ -25,10 +25,12 @@ echo "Setting up config files..."
 cp nginx/index_model.html nginx/index.html
 cp ftps/start_model.sh ftps/start.sh
 cp mysql/wordpress_model.sql mysql/wordpress.sql
+cp telegraf/telegraf_model.conf telegraf/telegraf.conf
 
 sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' nginx/index.html
 sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' ftps/start.sh
-sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' srcs/containers/mysql/wordpress.sql
+sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' mysql/wordpress.sql
+sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' telegraf/telegraf.conf
 echo "All files set up correctly"
 
 #services="nginx mysql wordpress phpmyadmin ftps influxdb telegraf grafana"
@@ -37,3 +39,4 @@ echo "All files set up correctly"
 docker build -t service_nginx ./nginx
 docker build -t service_ftps ./ftps
 docker build -t service_wordpress ./wordpress
+docker build -t service_telegraf ./telegraf
