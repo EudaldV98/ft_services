@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+	labels:
+		app: grafana
+	name: grafana
+spec:
+	replicas: 1
+	selector:
+		matchLabels:
+			app: grafana
+	strategy:
+		type: Recreate
+	template:
+		metadata:
+			labels:
+				app: grafana
+		spec:
+			containers:
+			- image: grafana-image
+				imagePullPolicy: Never
+				name: grafana
+				ports:
+				- containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+	name: grafana
+	labels:
+		app: grafana
+spec:
+	type: NodePort
+	ports:
+	- port: 3000
+		nodePort: 3000
+	selector:
+		app: grafana
