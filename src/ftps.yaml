@@ -1,34 +1,22 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ftps-alpine
+  name: ftps
   labels:
-    run: ftps-alpine
+    app: ftps
 spec:
   type: NodePort
+  selector:
+    app: ftps
   ports:
   - port: 21
     targetPort: 21
-    nodePort: 30025
-    protocol: TCP
-    name: ftp21
-  - port: 20
-    targetPort: 20
-    protocol: TCP
-    nodePort: 30026
-    name: ftp20
-  - port: 30020
-    targetPort: 30020
-    nodePort: 30020
-    protocol: TCP
-    name: ftp30020
-  - port: 30021
-    targetPort: 30021
-    nodePort: 30021
-    protocol: TCP
-    name: ftp30021
-  selector:
-    run: ftps-alpine
+    nodePort: 21
+    name: ftps
+  - port: 21000
+    targetPort: 21000
+    nodePort: 21000
+    name: ftps-data
 
 ---
 
@@ -36,22 +24,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ftps
+  labels:
+    app: ftps
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      run: ftps
-  replicas: 1
+      app: ftps
   template:
     metadata:
       labels:
-        run: ftps
+        app: ftps
     spec:
       containers:
       - name: ftps
-        image: ftps:latest
+        image: service_ftps
         imagePullPolicy: Never
-        ports:
-        - containerPort: 21
-        - containerPort: 20
-        - containerPort: 30020
-        - containerPort: 30021

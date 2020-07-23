@@ -1,24 +1,22 @@
-  
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: nginx
   labels:
     app: nginx
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: nginx
   ports:
-    - name: http
-      port: 80
-      nodePort: 80
-    - name: https
-      port: 443
-      nodePort: 443
-    - name: ssh
-      port: 2222
-      nodePort: 2222
+  - port: 80
+    name: http
+  - port: 443
+    name: https
+  - port: 22
+    nodePort: 22
+    targetPort: 22
+    name: ssh
 
 ---
 

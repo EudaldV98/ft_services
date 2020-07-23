@@ -1,24 +1,40 @@
-FROM	alpine
+FROM alpine
 
-RUN	apk update ; \
-	apk add nginx ; \
-	apk add --no-cache openrc openssl openssh
+# We install packages
+RUN apk update
+RUN apk add openrc --no-cache
+RUN apk add openssh
+RUN apk add openssl
+RUN apk add nginx
+RUN apk add telegraf --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
-RUN	mkdir -p var/run/nginx
+# We create user that the web server will use
+RUN adduser -D -g 'www' www
 
-COPY	index.html /www/
+# We setup web server files and permissions
+RUN mkdir /www
+RUN chown -R www:www /var/lib/nginx
+RUN chown -R www:www /www
+RUN mkdir -p /run/nginx
 
-RUN	rm /etc/nginx/nginx.conf
-COPY	nginx.conf /etc/nginx/nginx.conf
+# Nginx config file and webpage
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY index.html /www/index.html
 
-RUN	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/server.key -out /etc/nginx/server.crt -subj "/C=FR/ST=IDE/L=Paris/O=42/OU=42/CN=mywebsite.com" 
+# We create SSH user and SSL key
+RUN adduser -D user
+RUN echo "user:password"|chpasswd
+RUN ssh-keygen -A
+RUN yes "" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/certs/localhost.key -out /etc/ssl/certs/localhost.crt
 
-RUN	usr/bin/ssh-keygen -A 
-COPY	sshd_config /etc/ssh/
+# Telegraf setup
+RUN mkdir -p /etc/telegraf
+COPY ./telegraf.conf /etc/telegraf/telegraf.conf
 
-COPY	start.sh .
-RUN	chmod 775 start.sh
-
-EXPOSE	80 443 2222
-
-CMD	./start.sh
+# Here we go
+COPY start.sh ./start.sh
+RUN chmod +x /start.sh
+CMD sh ./start.sh
+EXPOSE 80
+EXPOSE 443
+EXPOSE 22

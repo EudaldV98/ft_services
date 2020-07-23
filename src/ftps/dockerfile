@@ -1,21 +1,24 @@
-FROM	alpine:3.11
 
-RUN	apk add --no-cache vsftpd ; \
-	apk add openssl ; \
-	apk add openrc 
+FROM alpine
+ARG IP
 
-RUN	openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=FR/ST=fr/L=Paris/O=School42/CN=$MINIKUBE_IP" -keyout /etc/ssl/certs/vsftpd.pem -out /etc/ssl/certs/vsftpd.pem
+# We install packages
+RUN apk update
+RUN apk add openrc --no-cache
+RUN apk add telegraf --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
+RUN apk add pure-ftpd --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
-RUN	chmod 755 /etc/ssl/certs/vsftpd.pem
+# We create a new user
+RUN { echo "password"; echo "password"; } | adduser user
 
-ADD	vsftpd.conf /etc/vsftpd/vsftpd.conf
+# We save the minikube IP given at build time
+RUN echo ${IP} > ip.txt
 
-ADD	start.sh /
+# We setup Telegraf config
+RUN mkdir -p /etc/telegraf
+COPY ./telegraf.conf /etc/telegraf/telegraf.conf
 
-RUN	chmod 775 start.sh
-
-VOLUME	/ftp/ftp
-
-EXPOSE	21 21000-21010
-
-CMD	/start.sh
+# Here we go
+COPY ./start.sh /start.sh
+CMD sh /start.sh
+EXPOSE 21 21000

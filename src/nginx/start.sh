@@ -1,4 +1,6 @@
-adduser -D "$SSH_USER"
-echo "$SSH_USER:$SSH_PASSWORD" | chpasswd
+  #!/bin/sh
+
+# We start the SSH deamon, Telegraf and nginx
 /usr/sbin/sshd
-nginx -g "daemon off;"
+telegraf &
+nginx -g 'daemon off;'
