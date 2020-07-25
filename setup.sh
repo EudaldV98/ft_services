@@ -1,7 +1,5 @@
 #!/bin/sh
-echo "Deleting previous Minikube elements."
 minikube delete
-echo "Starting minikube..."
 minikube --vm-driver=docker start --extra-config=apiserver.service-node-port-range=1-35000
 #minikube --vm-driver=virtualbox start --extra-config=apiserver.service-node-port-range=1-35000
 
@@ -27,10 +25,10 @@ eval $(minikube docker-env)
 echo "Env set up correctly"
 
 # stockage of minikube ip
-MINIKUBE_IP=`minikube ip`
-echo "minikube ip: $MINIKUBE_IP"
-#IP=$(kubectl get node -o=custom-columns='DATA:status.addresses[0].address' | sed -n 2p)
-#printf "Minikube IP: ${IP}"
+# MINIKUBE_IP=`minikube ip`
+# echo "minikube ip: $MINIKUBE_IP"
+IP=$(kubectl get node -o=custom-columns='DATA:status.addresses[0].address' | sed -n 2p)
+printf "Minikube IP: ${IP}"
 
 #config setup
 echo "Setting up config files..."
@@ -47,7 +45,7 @@ echo "All files set up correctly"
 
 #docker build services
 docker build -t service_nginx src/nginx
-docker build -t service_ftps --build-arg IP=${MINIKUBE_IP} src/ftps
+docker build -t service_ftps --build-arg IP=${IP} src/ftps
 #docker build -t service_wordpress src/wordpress
 #docker build -t service_phpmyadmin src/phpmyadmin
 docker build -t service_influxdb src/influxdb
@@ -63,4 +61,4 @@ kubectl apply -f src/grafana.yaml
 kubectl apply -f src/metallb-configmap.yaml
 
 echo "Opening the network in your browser"
-open http://$MINIKUBE_IP
+open http://$IP
