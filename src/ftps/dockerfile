@@ -1,4 +1,3 @@
-
 FROM alpine
 ARG IP
 
@@ -17,6 +16,9 @@ RUN echo ${IP} > ip.txt
 # We setup Telegraf config
 RUN mkdir -p /etc/telegraf
 COPY ./telegraf.conf /etc/telegraf/telegraf.conf
+
+# We setup welcome message
+RUN echo 'FTP of ft_services by tmarx' > /hello.txt
 
 # Here we go
 COPY ./start.sh /start.sh

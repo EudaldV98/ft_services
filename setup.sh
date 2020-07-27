@@ -25,8 +25,8 @@ eval $(minikube docker-env)
 echo "Env set up correctly"
 
 # stockage of minikube ip
-# MINIKUBE_IP=`minikube ip`
-# echo "minikube ip: $MINIKUBE_IP"
+#MINIKUBE_IP=`minikube ip`
+#echo "minikube ip: $MINIKUBE_IP"
 IP=$(kubectl get node -o=custom-columns='DATA:status.addresses[0].address' | sed -n 2p)
 printf "Minikube IP: ${IP}"
 
@@ -37,7 +37,7 @@ echo "Setting up config files..."
 #cp src/mysql/wordpress_model.sql src/mysql/wordpress.sql
 #cp src/telegraf/telegraf_model.conf src/telegraf/telegraf.conf
 
-#sed -i 's/MINIKUBE_IP/'"$IP"'/g' src/nginx/index.html
+#sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' src/nginx/index.html
 #sed -i 's/MINIKUBE_IP/'"$IP"'/g' src/ftps/start.sh
 #sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' src/mysql/wordpress.sql
 #sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' src/telegraf/telegraf.conf
@@ -61,4 +61,4 @@ kubectl apply -f src/grafana.yaml
 kubectl apply -f src/metallb-configmap.yaml
 
 echo "Opening the network in your browser"
-open http://$IP
+open http://$MINIKUBE_IP
