@@ -1,5 +1,5 @@
 #!/bin/sh
 
 # We launch Telegraf and InfluxDB database
-telegraf &
+#telegraf &
 influxd run -config /etc/influxdb.conf

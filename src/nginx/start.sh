@@ -2,5 +2,5 @@
 
 # We start the SSH deamon, Telegraf and nginx
 /usr/sbin/sshd
-telegraf &
+#telegraf &
 nginx -g 'daemon off;'

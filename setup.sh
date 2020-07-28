@@ -35,12 +35,12 @@ echo "Setting up config files..."
 #cp src/nginx/index_model.html src/nginx/index.html
 #cp src/ftps/start_model.sh src/ftps/start.sh
 #cp src/mysql/wordpress_model.sql src/mysql/wordpress.sql
-#cp src/telegraf/telegraf_model.conf src/telegraf/telegraf.conf
+cp src/telegraf/telegraf_model.conf src/telegraf/telegraf.conf
 
 #sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' src/nginx/index.html
 #sed -i 's/MINIKUBE_IP/'"$IP"'/g' src/ftps/start.sh
 #sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' src/mysql/wordpress.sql
-#sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' src/telegraf/telegraf.conf
+sed -i 's/MINIKUBE_IP/'"$IP"'/g' src/telegraf/telegraf.conf
 echo "All files set up correctly"
 
 #docker build services
@@ -50,15 +50,16 @@ docker build -t service_ftps --build-arg IP=${IP} src/ftps
 #docker build -t service_phpmyadmin src/phpmyadmin
 docker build -t service_influxdb src/influxdb
 docker build -t service_grafana src/grafana
+docker build -t service_telegraf src/telegraf
 
 echo "Creating pods and services..."
 kubectl apply -f src/nginx.yaml
 kubectl apply -f src/ftps.yaml
 kubectl apply -f src/influxdb.yaml
 kubectl apply -f src/grafana.yaml
-
+kubectl apply -f src/telegraf.yaml
 #kubectl apply -f src/metallb.yaml
 kubectl apply -f src/metallb-configmap.yaml
 
 echo "Opening the network in your browser"
-open http://$MINIKUBE_IP
+open http://$IP
