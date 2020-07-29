@@ -1,5 +1,5 @@
 #!/bin/sh
-minikube delete
+#minikube delete
 minikube --vm-driver=docker start --extra-config=apiserver.service-node-port-range=1-35000
 #minikube --vm-driver=virtualbox start --extra-config=apiserver.service-node-port-range=1-35000
 
@@ -34,30 +34,34 @@ printf "Minikube IP: ${IP}"
 echo "Setting up config files..."
 #cp src/nginx/index_model.html src/nginx/index.html
 #cp src/ftps/start_model.sh src/ftps/start.sh
-#cp src/mysql/wordpress_model.sql src/mysql/wordpress.sql
+cp src/mysql/wordpress_model.sql src/mysql/wordpress.sql
 cp src/telegraf/telegraf_model.conf src/telegraf/telegraf.conf
 
 #sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' src/nginx/index.html
 #sed -i 's/MINIKUBE_IP/'"$IP"'/g' src/ftps/start.sh
-#sed -i 's/MINIKUBE_IP/'"$MINIKUBE_IP"'/g' src/mysql/wordpress.sql
+sed -i 's/MINIKUBE_IP/'"$IP"'/g' src/mysql/wordpress.sql
 sed -i 's/MINIKUBE_IP/'"$IP"'/g' src/telegraf/telegraf.conf
 echo "All files set up correctly"
 
 #docker build services
 docker build -t service_nginx src/nginx
 docker build -t service_ftps --build-arg IP=${IP} src/ftps
-#docker build -t service_wordpress src/wordpress
-#docker build -t service_phpmyadmin src/phpmyadmin
+docker build -t service_wordpress --build-arg IP=${IP} src/wordpress
+docker build -t service_phpmyadmin src/phpmyadmin
 docker build -t service_influxdb src/influxdb
 docker build -t service_grafana src/grafana
 docker build -t service_telegraf src/telegraf
+docker build -t service_mysql src/mysql
 
 echo "Creating pods and services..."
 kubectl apply -f src/nginx.yaml
 kubectl apply -f src/ftps.yaml
 kubectl apply -f src/influxdb.yaml
 kubectl apply -f src/grafana.yaml
+kubectl apply -f src/wordpress.yaml
 kubectl apply -f src/telegraf.yaml
+kubectl apply -f src/phpmyadmin.yaml
+kubectl apply -f src/mysql.yaml
 #kubectl apply -f src/metallb.yaml
 kubectl apply -f src/metallb-configmap.yaml
 
