@@ -45,8 +45,8 @@ echo "All files set up correctly"
 
 #docker build services
 docker build -t service_nginx src/nginx
-docker build -t service_ftps --build-arg IP=${IP} src/ftps
-docker build -t service_wordpress --build-arg IP=${IP} src/wordpress
+docker build -t service_ftps --build-arg IP=${MINIKUBE_IP} src/ftps
+docker build -t service_wordpress src/wordpress
 docker build -t service_phpmyadmin src/phpmyadmin
 docker build -t service_influxdb src/influxdb
 docker build -t service_grafana src/grafana
