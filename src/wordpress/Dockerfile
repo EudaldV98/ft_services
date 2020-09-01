@@ -1,16 +1,24 @@
-FROM	alpine:3.11
+FROM alpine:latest
 
-RUN	apk update ; \
-	apk add wget ; \
-	apk add php7 php7-fpm php7-opcache php7-gd php7-mysqli php7-zlib php7-curl php7-mbstring php7-json php7-session 
+RUN apk update && apk upgrade
+RUN apk add php7 php7-fpm php7-opcache php7-gd php7-mysqli php7-zlib php7-curl php7-mbstring php7-json php7-session
 
-RUN	mkdir var/www/ 
-RUN	wget https://wordpress.org/latest.tar.gz 
-RUN	tar -xvf latest.tar.gz 
-RUN	mv wordpress/* /var/www 
+RUN wget -O wordpress.zip https://wordpress.org/latest.zip \
+	&& unzip /wordpress.zip -d /usr/share/ 1> /dev/null  \
+	&& rm wordpress.zip \
+	&& rm -rf /usr/share/wordpress/wp-config.php \
+	&& rm -rf /var/cache/apk/*
 
-COPY	wp-config.php /var/www/wp-config.php
+RUN apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
-EXPOSE	5050
+COPY ./wp-config.php /usr/share/wordpress/wp-config.php
 
-CMD	php -S 0.0.0.0:5050 -t /var/www/
+RUN mkdir -p /etc/telegraf
+COPY ./telegraf.conf /etc/telegraf/telegraf.conf
+
+COPY ./start.sh .
+RUN chmod 755 /start.sh
+
+EXPOSE 5050
+
+CMD sh ./start.sh

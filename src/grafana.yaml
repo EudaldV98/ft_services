@@ -4,6 +4,8 @@ metadata:
   name: grafana
   labels:
     app: grafana
+  annotations:
+    metallb.universe.tf/address-pool: default
 spec:
   type: LoadBalancer
   ports:

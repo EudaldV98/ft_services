@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - 192.168.99.110-192.168.99.119
+    - name: ftps-ip
+      protocol: layer2
+      addresses:
+      - 192.168.99.121-192.168.99.121
+    - name: wordpress-ip
+      protocol: layer2
+      addresses:
+      - 192.168.99.120-192.168.99.120

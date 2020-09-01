@@ -1,17 +1,16 @@
-FROM		alpine:3.11
+FROM alpine:latest
 
-RUN 		apk update ; \
-		apk add mariadb mariadb-client && apk add --no-cache --upgrade bash ; \
-		rm -rf /var/cache/apk/*
+RUN apk update \
+	&& apk add mysql mysql-client
 
-COPY		start.sh .
-COPY		init_db.sh .
-COPY		mariadb-server.cnf /etc/my.cnf.d/mariadb-server.cnf
-COPY		my.cnf /etc/my.cnf
-COPY		wordpress.sql .
-RUN 		chmod 777 start.sh
-RUN 		chmod 777 init_db.sh
+RUN apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
-EXPOSE		3306
+RUN mkdir -p /etc/telegraf
+COPY ./telegraf.conf /etc/telegraf/telegraf.conf
 
-CMD		./start.sh
+ADD ./init_db.sh .
+ADD ./my.cnf /etc/
+
+EXPOSE 3306
+
+ENTRYPOINT ["/bin/sh", "./init_db.sh"]

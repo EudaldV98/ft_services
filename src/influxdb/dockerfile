@@ -1,9 +1,14 @@
-FROM	alpine:3.11
+FROM alpine:latest
 
-RUN 	apk add influxdb ; \
-	apk add openrc ; \
- 	apk add ca-certificates
+RUN apk update && apk add influxdb
+RUN apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
-EXPOSE	8086
+RUN mkdir -p /etc/telegraf
 
-CMD 	influxd run -config /etc/influxdb.conf
+COPY ./telegraf.conf /etc/telegraf/telegraf.conf
+
+EXPOSE 8086
+
+COPY ./start.sh /start.sh
+
+ENTRYPOINT ["/start.sh"]

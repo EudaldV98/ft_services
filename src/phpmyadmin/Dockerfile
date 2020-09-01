@@ -1,15 +1,22 @@
-FROM	alpine:3.11
+FROM alpine:latest
 
-RUN	apk update && apk upgrade ; \
-	apk add php7 php7-fpm php7-opcache php7-gd php7-mysqli php7-zlib php7-curl php7-mbstring php7-json php7-session
+RUN apk update && apk upgrade
+RUN apk add php7 php7-fpm php7-opcache php7-gd php7-mysqli php7-zlib php7-curl php7-mbstring php7-json php7-session
 
-RUN	wget https://files.phpmyadmin.net/phpMyAdmin/4.9.5/phpMyAdmin-4.9.5-all-languages.tar.gz ; \
-	tar xvf phpMyAdmin-4.9.5-all-languages.tar.gz ; \
-	rm phpMyAdmin-4.9.5-all-languages.tar.gz ; \
-	mv phpMyAdmin-4.9.5-all-languages /www
+RUN wget http://files.directadmin.com/services/all/phpMyAdmin/phpMyAdmin-5.0.2-all-languages.tar.gz \
+	&& tar zxvf phpMyAdmin-5.0.2-all-languages.tar.gz \
+	&& rm phpMyAdmin-5.0.2-all-languages.tar.gz \
+	&& mv phpMyAdmin-5.0.2-all-languages /usr/share/phpmyadmin \
+	&& rm -rf /var/cache/apk/*
 
-COPY	phpmyadmin.inc.php /www/config.inc.php
+RUN apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
-EXPOSE	5000
+COPY ./phpmyadmin.inc.php /usr/share/phpmyadmin/config.inc.php
 
-CMD	php -S 0.0.0.0:5000 -t /www/
+RUN mkdir -p /etc/telegraf
+COPY ./telegraf.conf /etc/telegraf/telegraf.conf
+COPY ./start.sh /start.sh
+
+EXPOSE 5000
+
+ENTRYPOINT /start.sh

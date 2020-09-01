@@ -1,40 +1,44 @@
-FROM alpine
+FROM	alpine:latest
 
-# We install packages
 RUN apk update
 RUN apk add openrc --no-cache
 RUN apk add openssh
 RUN apk add openssl
 RUN apk add nginx
-RUN apk add telegraf --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
-# We create user that the web server will use
-RUN adduser -D -g 'www' www
-
-# We setup web server files and permissions
-RUN mkdir /www
-RUN chown -R www:www /var/lib/nginx
-RUN chown -R www:www /www
 RUN mkdir -p /run/nginx
+
+RUN apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
 # Nginx config file and webpage
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY index.html /www/index.html
 
 # We create SSH user and SSL key
-RUN adduser -D user
-RUN echo "user:password"|chpasswd
-RUN ssh-keygen -A
+RUN adduser -D admin
+RUN echo "admin:admin"|chpasswd
+
+RUN mkdir /admin
+RUN chown -R admin:admin /var/lib/nginx
+RUN chown -R admin:admin /admin
+
+RUN rm /etc/nginx/conf.d/default.conf
+RUN sed -i -e "s/#Port 22/Port 2222/g" /etc/ssh/sshd_config
+ADD ./index.html /usr/share/nginx/html/index.html
+RUN chmod 666 /usr/share/nginx/html/index.html
+
 RUN yes "" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/certs/localhost.key -out /etc/ssl/certs/localhost.crt
 
-# Telegraf setup
-RUN mkdir -p /etc/telegraf
-COPY ./telegraf.conf /etc/telegraf/telegraf.conf
+RUN ssh-keygen -A
 
-# Here we go
+COPY ./ssh-message /etc/motd
+
+RUN mkdir -p /etc/telegraf
+COPY telegraf.conf /etc/telegraf/telegraf.conf
+
 COPY start.sh ./start.sh
 RUN chmod +x /start.sh
 CMD sh ./start.sh
 EXPOSE 80
 EXPOSE 443
-EXPOSE 22
+EXPOSE 2222
