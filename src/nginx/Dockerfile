@@ -21,6 +21,7 @@ RUN echo "admin:admin"|chpasswd
 RUN mkdir /admin
 RUN chown -R admin:admin /var/lib/nginx
 RUN chown -R admin:admin /admin
+RUN chown -R admin:admin /www
 
 RUN rm /etc/nginx/conf.d/default.conf
 RUN sed -i -e "s/#Port 22/Port 2222/g" /etc/ssh/sshd_config

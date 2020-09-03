@@ -40,3 +40,11 @@ spec:
         ports:
         - containerPort: 5050
         imagePullPolicy: Never
+        livenessProbe:
+          exec:
+            command:
+            - /bin/ash
+            - -c
+            - 'ps aux | egrep [t]elegraf'
+          initialDelaySeconds: 10
+          periodSeconds: 5

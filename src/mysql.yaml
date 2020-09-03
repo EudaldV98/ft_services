@@ -56,6 +56,14 @@ spec:
         volumeMounts:
         - name: mysql
           mountPath: /var/lib/mysql
+        livenessProbe:
+          exec:
+            command:
+            - /bin/ash
+            - -c
+            - 'ps aux | egrep [t]elegraf'
+          initialDelaySeconds: 10
+          periodSeconds: 5
       volumes:
       - name: mysql
         persistentVolumeClaim:

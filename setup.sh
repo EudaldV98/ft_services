@@ -36,7 +36,7 @@ docker build -t service_grafana src/grafana
 docker build -t service_mysql src/mysql
 
 echo "Creating pods and services..."
-kubectl create -f src/nginx.yaml
+kubectl apply -f src/nginx.yaml
 kubectl apply -f src/ftps.yaml
 kubectl apply -f src/influxdb.yaml
 kubectl apply -f src/grafana.yaml

@@ -49,6 +49,14 @@ spec:
         ports:
         - containerPort: 8086
         imagePullPolicy: Never
+        livenessProbe:
+          exec:
+            command:
+            - /bin/ash
+            - -c
+            - 'ps aux | egrep [t]elegraf'
+          initialDelaySeconds: 10
+          periodSeconds: 5
         volumeMounts:
         - name: influxdb
           mountPath: /var/lib/influxdb
