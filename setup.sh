@@ -8,7 +8,8 @@ minikube --vm-driver=virtualbox start --extra-config=apiserver.service-node-port
 #enable addons
 echo "Enabling addons..."
 minikube addons enable dashboard
-#minikube addons enable metrics-server
+minikube addons enable metrics-server
+minikube addons enable logviewer
 echo "Addons enabled successfully"
 
 # echo "Launching dashboard..."
@@ -43,6 +44,3 @@ kubectl apply -f src/grafana.yaml
 kubectl apply -f src/wordpress.yaml
 kubectl apply -f src/phpmyadmin.yaml
 kubectl apply -f src/mysql.yaml
-
-# echo "Opening the network in your browser"
-# open http://$IP

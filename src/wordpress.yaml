@@ -10,7 +10,6 @@ spec:
   type: LoadBalancer
   ports:
   - port: 5050
-    nodePort: 5050
     protocol: TCP
     name: http
   selector:
