@@ -11,7 +11,7 @@ RUN wget http://files.directadmin.com/services/all/phpMyAdmin/phpMyAdmin-5.0.2-a
 
 RUN apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
-COPY ./phpmyadmin.inc.php /usr/share/phpmyadmin/config.inc.php
+COPY ./config.inc.php /usr/share/phpmyadmin/config.inc.php
 
 RUN mkdir -p /etc/telegraf
 COPY ./telegraf.conf /etc/telegraf/telegraf.conf
@@ -19,4 +19,4 @@ COPY ./start.sh /start.sh
 
 EXPOSE 5000
 
-ENTRYPOINT /start.sh
+CMD ["/start.sh"]

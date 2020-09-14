@@ -1,22 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: wordpress
+  name: wordpress-service
   annotations:
     metallb.universe.tf/address-pool: wordpress-ip
-  labels:
-    app: wordpress
 spec:
   type: LoadBalancer
   ports:
   - port: 5050
+    targetPort: 5050
     protocol: TCP
     name: http
   selector:
     app: wordpress
-
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,17 +25,22 @@ spec:
   selector:
     matchLabels:
       app: wordpress
+      tier: frontend
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: wordpress
+        tier: frontend
     spec:
       containers:
-      - name: wordpress
-        image: service_wordpress
+      - image: service_wordpress
+        imagePullPolicy: Never
+        name: wordpress
         ports:
         - containerPort: 5050
-        imagePullPolicy: Never
+          name: wordpress
         livenessProbe:
           exec:
             command:

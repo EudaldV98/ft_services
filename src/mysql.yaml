@@ -7,28 +7,23 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 3306
-    targetPort: 3306
-    protocol: TCP
-    name: mysql
+    - port: 3306
   selector:
     app: mysql
-
+    tier: mysql
 ---
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql
+  name: mysql-pv-claim
   labels:
     app: mysql
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
-
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -37,23 +32,28 @@ metadata:
   labels:
     app: mysql
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: mysql
+      tier: mysql
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: mysql
+        tier: mysql
     spec:
       containers:
-      - name: mysql
-        image: service_mysql
+      - image: service_mysql
         imagePullPolicy: Never
+        name: mysql
         ports:
         - containerPort: 3306
           name: mysql
         volumeMounts:
-        - name: mysql
+        - name: mysql-persistent-storage
           mountPath: /var/lib/mysql
         livenessProbe:
           exec:
@@ -64,6 +64,6 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 5
       volumes:
-      - name: mysql
+      - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: mysql
+          claimName: mysql-pv-claim

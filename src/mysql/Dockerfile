@@ -13,4 +13,4 @@ ADD ./my.cnf /etc/
 
 EXPOSE 3306
 
-ENTRYPOINT ["/bin/sh", "./init_db.sh"]
+ENTRYPOINT ["/bin/sh", "/init_db.sh"]
