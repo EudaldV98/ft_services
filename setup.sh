@@ -38,6 +38,8 @@ docker build -t service_influxdb src/influxdb
 docker build -t service_grafana src/grafana
 docker build -t service_mysql src/mysql
 
+kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql wordpress -u root < src/mysql/wordpress.sql
+
 echo "Creating pods and services..."
 kubectl apply -f src/nginx.yaml
 kubectl apply -f src/ftps.yaml
