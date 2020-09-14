@@ -44,3 +44,5 @@ kubectl apply -f src/grafana.yaml
 kubectl apply -f src/wordpress.yaml
 kubectl apply -f src/phpmyadmin.yaml
 kubectl apply -f src/mysql.yaml
+
+minikube dashboard &
