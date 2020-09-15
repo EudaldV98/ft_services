@@ -1,8 +1,8 @@
 #!/bin/sh
 minikube delete
-#minikube config unset vm-driver
+minikube config unset vm-driver
 #minikube --vm-driver=docker start --extra-config=apiserver.service-node-port-range=1-35000
-minikube --vm-driver=virtualbox start --extra-config=apiserver.service-node-port-range=1-35000
+minikube start --driver=virtualbox
 #minikube start --extra-config=apiserver.service-node-port-range=21-32767
 
 #enable addons
@@ -30,13 +30,14 @@ echo "metallb enabled"
 FTPS_IP=192.168.99.121
 
 #docker build services
+docker build -t service_mysql src/mysql
+kubectl apply -f src/mysql.yaml
 docker build -t service_nginx src/nginx
 docker build -t service_ftps --build-arg IP=${FTPS_IP} src/ftps
 docker build -t service_wordpress src/wordpress
 docker build -t service_phpmyadmin src/phpmyadmin
 docker build -t service_influxdb src/influxdb
 docker build -t service_grafana src/grafana
-docker build -t service_mysql src/mysql
 
 kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql wordpress -u root < src/mysql/wordpress.sql
 
@@ -47,5 +48,3 @@ kubectl apply -f src/influxdb.yaml
 kubectl apply -f src/grafana.yaml
 kubectl apply -f src/wordpress.yaml
 kubectl apply -f src/phpmyadmin.yaml
-kubectl apply -f src/mysql.yaml
-
