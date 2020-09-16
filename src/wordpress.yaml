@@ -10,7 +10,6 @@ spec:
   - port: 5050
     targetPort: 5050
     protocol: TCP
-    name: http
   selector:
     app: wordpress
 ---
@@ -25,14 +24,10 @@ spec:
   selector:
     matchLabels:
       app: wordpress
-      tier: frontend
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
         app: wordpress
-        tier: frontend
     spec:
       containers:
       - image: service_wordpress

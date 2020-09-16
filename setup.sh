@@ -1,31 +1,23 @@
 #!/bin/sh
 minikube delete
 minikube config unset vm-driver
-#minikube --vm-driver=docker start --extra-config=apiserver.service-node-port-range=1-35000
 minikube start --driver=virtualbox
-#minikube start --extra-config=apiserver.service-node-port-range=21-32767
 
 #enable addons
 echo "Enabling addons..."
 minikube addons enable dashboard
 minikube addons enable metrics-server
-minikube addons enable logviewer
 echo "Addons enabled successfully"
-
-# echo "Launching dashboard..."
-# minikube dashboard &
 
 #set up docker env
 echo "Setting up env..."
 eval $(minikube docker-env)
-echo "Env set up correctly"
-
-minikube dashboard &
+echo "Env set up correctly."
 
 echo "Enabling metallb..."
 kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.1/manifests/metallb.yaml
 kubectl create -f src/metallb_config.yaml
-echo "metallb enabled"
+echo "Metallb enabled."
 
 FTPS_IP=192.168.99.121
 
@@ -39,7 +31,9 @@ docker build -t service_phpmyadmin src/phpmyadmin
 docker build -t service_influxdb src/influxdb
 docker build -t service_grafana src/grafana
 
+echo "Adding db to mysql..."
 kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql wordpress -u root < src/mysql/wordpress.sql
+echo "DB added successfully."
 
 echo "Creating pods and services..."
 kubectl apply -f src/nginx.yaml
@@ -48,3 +42,6 @@ kubectl apply -f src/influxdb.yaml
 kubectl apply -f src/grafana.yaml
 kubectl apply -f src/wordpress.yaml
 kubectl apply -f src/phpmyadmin.yaml
+
+echo "Launching dashboard..."
+minikube dashboard &
