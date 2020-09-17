@@ -1,7 +1,7 @@
 #!/bin/sh
 minikube delete
 minikube config unset vm-driver
-minikube start --driver=virtualbox
+minikube start --driver=virtualbox --extra-config=apiserver.service-node-port-range=1-35000
 
 #enable addons
 echo "Enabling addons..."
@@ -13,6 +13,8 @@ echo "Addons enabled successfully"
 echo "Setting up env..."
 eval $(minikube docker-env)
 echo "Env set up correctly."
+
+sed -i '' "s/192.168.99.111:5050/192.168.99.120:5050/g" src/mysql/wordpress.sql
 
 echo "Enabling metallb..."
 kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.1/manifests/metallb.yaml

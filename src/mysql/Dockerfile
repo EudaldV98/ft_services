@@ -8,6 +8,7 @@ RUN apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/test
 RUN mkdir -p /etc/telegraf
 COPY ./telegraf.conf /etc/telegraf/telegraf.conf
 
+ADD ./wordpress.sql .
 ADD ./init_db.sh .
 ADD ./my.cnf /etc/
 
