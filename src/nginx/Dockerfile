@@ -27,7 +27,7 @@ RUN ssh-keygen -A
 
 COPY ./ssh-message /etc/motd
 COPY ./start.sh /start.sh
-
+RUN	 chmod +x ./start.sh
 RUN mkdir -p /etc/telegraf
 COPY ./telegraf.conf /etc/telegraf/telegraf.conf
 
