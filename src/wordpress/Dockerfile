@@ -13,7 +13,7 @@ RUN wget -O wordpress.zip https://wordpress.org/latest.zip \
 
 RUN apk add telegraf --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --no-cache
 
-COPY ./wp-config.php /www/wordpress/wp-config.php
+COPY ./wp-config.php /usr/share/wordpress/wp-config.php
 
 RUN mkdir -p /etc/telegraf
 COPY ./telegraf.conf /etc/telegraf/telegraf.conf
