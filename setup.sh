@@ -3,7 +3,7 @@ minikube delete
 minikube config unset vm-driver
 
 #Detect the platform
-OS = "`uname`"
+OS="`uname`"
 #Change settings depending on the platform
 case $OS in
 		"Linux")
@@ -11,7 +11,7 @@ case $OS in
 			sed -i '' "s/192.168.99.120:5050/172.17.0.20:5050/g" src/mysql/wordpress.sql
 			FTPS_IP=172.17.0.21
 		;;
-		"Darwin"
+		"Darwin")
 			minikube start --driver=virtualbox --extra-config=apiserver.service-node-port-range=1-35000
 			sed -i '' "s/192.168.99.120:5050/192.168.99.120:5050/g" src/mysql/wordpress.sql
 			FTPS_IP=192.168.99.121
@@ -33,8 +33,15 @@ echo "Env set up correctly."
 echo "Enabling metallb..."
 kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.1/manifests/metallb.yaml
 #Run configmap depending on the platform
-
-kubectl create -f src/metallb_config.yaml
+case $OS in
+		"Linux")
+			kubectl create -f src/metallb_config-Linux.yaml
+		;;
+		"Darwin")
+			kubectl create -f src/metallb_config-Darwin.yaml
+		;;
+		*) ;;
+esac
 echo "Metallb enabled."
 
 #docker build services
