@@ -15,7 +15,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: influxdb-deployment
+  name: influxdb
   namespace: default
   labels:
     app: influxdb
