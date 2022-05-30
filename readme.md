@@ -1,3 +1,5 @@
+# ft_services (now inception) from 42 shcool.
+This project is about containerization and services handling.\
 KUBERNETES:
 -----------
 
